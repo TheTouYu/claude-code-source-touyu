@@ -43,6 +43,9 @@ function hasRequiredSubscription(): boolean {
 }
 
 export function getChicagoEnabled(): boolean {
+  // Dev mode override: set CLAUDE_CODE_DEV_COMPUTER_USE=1 to bypass all gates
+  if (isEnvTruthy(process.env.CLAUDE_CODE_DEV_COMPUTER_USE)) return true
+
   // Disable for ants whose shell inherited monorepo dev config.
   // MONOREPO_ROOT_DIR is exported by config/local/zsh/zshrc, which
   // laptop-setup.sh wires into ~/.zshrc — its presence is the cheap
