@@ -419,6 +419,7 @@ export function meetsAvailabilityRequirement(cmd: Command): boolean {
   for (const a of cmd.availability) {
     switch (a) {
       case 'claude-ai':
+        if (process.env.CLAUDE_CODE_DEV_VOICE === '1') return true
         if (isClaudeAISubscriber()) return true
         break
       case 'console':
