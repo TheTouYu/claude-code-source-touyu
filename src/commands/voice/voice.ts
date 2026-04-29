@@ -15,7 +15,11 @@ const LANG_HINT_MAX_SHOWS = 2
 
 export const call: LocalCommandCall = async () => {
   // Check auth and kill-switch before allowing voice mode
-  if (!isVoiceModeEnabled()) {
+  // Dev mode: also allow when CLAUDE_CODE_DEV_VOICE=1 is set
+  if (
+    process.env.CLAUDE_CODE_DEV_VOICE !== '1' &&
+    !isVoiceModeEnabled()
+  ) {
     // Differentiate: OAuth-less users get an auth hint, everyone else
     // gets nothing (command shouldn't be reachable when the kill-switch is on).
     if (!isAnthropicAuthEnabled()) {
