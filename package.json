@@ -9,9 +9,10 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "dev": "bun --watch src/entrypoints/dev-cli.tsx",
-    "start": "bun src/entrypoints/dev-cli.tsx",
-    "start:home": "env CLAUDE_CONFIG_DIR=\"$HOME/.claude\" bun src/entrypoints/dev-cli.tsx",
+    "dev": "bun --feature=CHICAGO_MCP --watch src/entrypoints/dev-cli.tsx",
+    "start": "bun --feature=CHICAGO_MCP src/entrypoints/dev-cli.tsx",
+    "start:home": "env CLAUDE_CONFIG_DIR=\"$HOME/.claude\" bun --feature=CHICAGO_MCP src/entrypoints/dev-cli.tsx",
+    "start:no-cu": "bun src/entrypoints/dev-cli.tsx",
     "mcp": "bun src/entrypoints/dev-mcp.ts"
   },
   "dependencies": {
