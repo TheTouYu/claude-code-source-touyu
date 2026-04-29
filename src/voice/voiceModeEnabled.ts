@@ -14,6 +14,9 @@ import {
  * should be *visible* (e.g., command registration, config UI).
  */
 export function isVoiceGrowthBookEnabled(): boolean {
+  // Dev mode override: set CLAUDE_CODE_DEV_VOICE=1 to bypass all gates
+  if (process.env.CLAUDE_CODE_DEV_VOICE === '1') return true
+
   // Positive ternary pattern — see docs/feature-gating.md.
   // Negative pattern (if (!feature(...)) return) does not eliminate
   // inline string literals from external builds.
@@ -30,6 +33,9 @@ export function isVoiceGrowthBookEnabled(): boolean {
  * cold spawn per refresh is expected. Cheap enough for usage-time checks.
  */
 export function hasVoiceAuth(): boolean {
+  // Dev mode override: set CLAUDE_CODE_DEV_VOICE=1 to bypass OAuth check
+  if (process.env.CLAUDE_CODE_DEV_VOICE === '1') return true
+
   // Voice mode requires Anthropic OAuth — it uses the voice_stream
   // endpoint on claude.ai which is not available with API keys,
   // Bedrock, Vertex, or Foundry.
