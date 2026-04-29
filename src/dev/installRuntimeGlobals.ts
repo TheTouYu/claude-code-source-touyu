@@ -68,6 +68,44 @@ function configureDevConfigDir(): void {
 
 configureDevConfigDir()
 
+/**
+ * 在 dev 模式下，CLAUDE_CONFIG_DIR 被重定向到 .claude-dev，导致宿主机的
+ * ~/.claude/settings.json（含 env 字段）不会被 applySafeConfigEnvironmentVariables()
+ * 加载。此函数直接读取宿主机配置中的 env 字段并应用到 process.env，使 dev 版本
+ * 也能继承用户在生产版中配置的环境变量（如 ANTHROPIC_MODEL）。
+ */
+function applyHostConfigEnvironmentVariables(): void {
+  const homeDir = process.env.HOME || ''
+
+  // 从 ~/.claude/settings.json 读取 env 字段
+  const hostSettingsPath = join(homeDir, '.claude', 'settings.json')
+  if (existsSync(hostSettingsPath)) {
+    try {
+      const hostSettings = JSON.parse(readFileSync(hostSettingsPath, 'utf8'))
+      if (hostSettings.env && typeof hostSettings.env === 'object') {
+        Object.assign(process.env, hostSettings.env)
+      }
+    } catch {
+      // 配置文件不存在或格式错误，静默忽略
+    }
+  }
+
+  // 从 ~/.claude.json（legacy 配置）读取 env 字段
+  const hostConfigPath = join(homeDir, '.claude.json')
+  if (existsSync(hostConfigPath)) {
+    try {
+      const hostConfig = JSON.parse(readFileSync(hostConfigPath, 'utf8'))
+      if (hostConfig.env && typeof hostConfig.env === 'object') {
+        Object.assign(process.env, hostConfig.env)
+      }
+    } catch {
+      // 同上，静默忽略
+    }
+  }
+}
+
+applyHostConfigEnvironmentVariables()
+
 const defaults: MacroConfig = {
   VERSION: process.env.CLAUDE_CODE_DEV_VERSION || readLocalVersion(),
   BUILD_TIME: process.env.CLAUDE_CODE_DEV_BUILD_TIME,
